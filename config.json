@@ -1,0 +1,23 @@
+{
+    "NightModeAuto": true,
+    "transparency": 0.7,
+    "NightMode": {
+        "bg": "#302D2D",
+        "fg": "#FFFFFF",
+        "troughcolor": "#BC73D3",
+        "frame": "WindowDark.png",
+        "buttonMode": "NightMode_Night.png",
+        "volumeBar": "VolumeBarDark.png",
+        "volumeIndicator": "VolumeIndicatorDark.png"
+    },
+    "LightMode": {
+        "bg": "#FFFFFF",
+        "fg": "#302D2D",
+        "troughcolor": "#73D3BC",
+        "frame": "Window.png",
+        "buttonMode": "NightMode_Light.png",
+        "volumeBar": "VolumeBar.png",
+        "volumeIndicator": "VolumeIndicator.png"
+    },
+    "CustomMode": {}
+}
