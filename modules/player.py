@@ -1,6 +1,8 @@
 from tkinter import *
+import asyncio
 from modules.config import *
 from modules.volume import *
+from modules.media_control import *
 
 framesDirectory = "./frames/"
 iconosDirectory = "./icon/"
@@ -56,6 +58,22 @@ class Player:
         self.Volume_bar.bind("<ButtonPress>", lambda e: self.start_Volume())
         self.Volume_bar.bind("<B1-Motion>", lambda e: self.adjust_Volume())
         self.Volume_bar.bind("<ButtonRelease>", lambda e: self.stop_Volume())
+
+        self.Backward_button = PhotoImage(file=iconosDirectory + config[mode]["buttonBackward"])
+        self.Backward_label = Label(self.master, image=self.Backward_button,border=0, bg=config[mode]["bg"])
+        self.Backward_label.place(x=250, y=200)
+
+        self.player_button = PhotoImage(file=iconosDirectory + config[mode]["buttonPause"])
+        self.player_label = Label(self.master, image=self.player_button,border=0, bg=config[mode]["bg"])
+        self.player_label.place(x=300, y=205)
+        self.player_label.bind("<Button>", lambda e: self.play_pause(e))
+
+        self.forward_button = PhotoImage(file=iconosDirectory + config[mode]["buttonForward"])
+        self.forward_label = Label(self.master, image=self.forward_button,border=0, bg=config[mode]["bg"])
+        self.forward_label.place(x=335, y=200)
+
+
+        
         self.update_Volume()
 
         
@@ -102,6 +120,10 @@ class Player:
         self.Volume_text.config(text=volumePercent)
         set_volume(value)
 
+    def play_pause(self, e):
+        #get_media()
+        pass
+
     def NightMode_toggle(self, e):
         config["NightModeAuto"] = not config["NightModeAuto"]
         modifConfig(configDirectory, config)
@@ -118,5 +140,14 @@ class Player:
         self.frame_label.configure(image=self.frame_photo)
         self.NightMode_button = PhotoImage(file=iconosDirectory + config[mode]["buttonMode"])
         self.NightMode_label.configure(image=self.NightMode_button, bg=config[mode]["bg"])
-        self.Volume_bar.configure(bg=config[mode]["bg"], fg=config[mode]["fg"], troughcolor=config[mode]["troughcolor"], activebackground=config[mode]["fg"])
+        self.Volume_bar.configure(bg=config[mode]["bg"], fg=config[mode]["bg"], troughcolor=config[mode]["troughcolor"], activebackground=config[mode]["fg"])
         self.Volume_text.configure(bg=config[mode]["bg"], fg=config[mode]["fg"])
+        self.Backward_button = PhotoImage(file=iconosDirectory + config[mode]["buttonBackward"])
+        self.Backward_label.configure(image=self.Backward_button, bg=config[mode]["bg"])
+        self.player_button = PhotoImage(file=iconosDirectory + config[mode]["buttonPlay"])
+        self.player_label.configure(image=self.player_button, bg=config[mode]["bg"])
+        
+        #pause button here
+
+        self.forward_button = PhotoImage(file=iconosDirectory + config[mode]["buttonForward"])
+        self.forward_label.configure(image=self.forward_button, bg=config[mode]["bg"])

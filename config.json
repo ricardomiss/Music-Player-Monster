@@ -1,6 +1,6 @@
 {
     "NightModeAuto": true,
-    "transparency": 0.7,
+    "transparency": 0.75,
     "NightMode": {
         "bg": "#302D2D",
         "fg": "#FFFFFF",
@@ -8,7 +8,11 @@
         "frame": "WindowDark.png",
         "buttonMode": "NightMode_Night.png",
         "volumeBar": "VolumeBarDark.png",
-        "volumeIndicator": "VolumeIndicatorDark.png"
+        "volumeIndicator": "VolumeIndicatorDark.png",
+        "buttonBackward": "Atras_Dark.png",
+        "buttonPlay": "Play_Dark.png",
+        "buttonPause": "Pause_Dark.png",
+        "buttonForward": "Siguiente_Dark.png"
     },
     "LightMode": {
         "bg": "#FFFFFF",
@@ -17,7 +21,11 @@
         "frame": "Window.png",
         "buttonMode": "NightMode_Light.png",
         "volumeBar": "VolumeBar.png",
-        "volumeIndicator": "VolumeIndicator.png"
+        "volumeIndicator": "VolumeIndicator.png",
+        "buttonBackward": "Atras_Light.png",
+        "buttonPlay": "Play_Light.png",
+        "buttonPause": "Pause_Light.png",
+        "buttonForward": "Siguiente_Light.png"
     },
     "CustomMode": {}
 }
