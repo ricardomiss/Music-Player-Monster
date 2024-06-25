@@ -1,7 +1,7 @@
 import json
 
 def cargarConfig(configFile):
-    with open(configFile, "r") as file:
+    with open(configFile, "r", encoding="utf-8") as file:
         data = json.load(file)
     return data
 

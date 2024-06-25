@@ -1,5 +1,5 @@
 {
-    "NightModeAuto": true,
+    "NightModeAuto": false,
     "transparency": 0.75,
     "NightMode": {
         "bg": "#302D2D",
