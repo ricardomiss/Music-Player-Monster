@@ -33,21 +33,19 @@ async def control_media(estado):
 async def get_media():
     session = await get_session()
     if session:
-        info = await session.try_get_media_properties_async()
-        timeline = session.get_timeline_properties()
-        title = info.title
-        artist = info.artist
-        thumbnail = info.thumbnail
-        thumbnailname = await get_thumbnail(thumbnail)
-        source = session.source_app_user_model_id
-        st = timeline.start_time
-        et = timeline.end_time
-        data = [title, artist, thumbnail, source, st, et, thumbnailname]
+        data = await info_media(session, None)
         await save_data(data)
         return data
     else:
         return False
-    
+
+async def info_media(current_session, event):
+    info = await current_session.try_get_media_properties_async()
+    timeline = current_session.get_timeline_properties()
+    thumbnailname = await get_thumbnail(info.thumbnail)
+    data = [info.title, info.artist, info.thumbnail, current_session.source_app_user_model_id, timeline.start_time, timeline.end_time, thumbnailname]
+    return data
+
 async def get_thumbnail(thumbnail):
     date = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     buffer = Buffer(5000000)
@@ -92,5 +90,17 @@ async def save_data(data):
             f.truncate()
     except Exception as e:
         print(e)
-    
+
+def on_media_properties_changed(sender, e):
+    loop = asyncio.new_event_loop()
+    datos = loop.run_until_complete(info_media(sender, e))
+    print(datos)
+
+async def callback():
+    session = await get_session()
+    if session:
+        session.add_media_properties_changed(on_media_properties_changed)
+    while True:
+        pass
+        
 #TODO: FUNCION PARA OBTENER EL CURRENT TIME DE LA CANCION
