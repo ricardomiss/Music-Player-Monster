@@ -1,8 +1,8 @@
 {
     "NightModeAuto": true,
     "transparency": 0.75,
-    "windowX": 1309,
-    "windowY": 13,
+    "windowX": 694,
+    "windowY": 195,
     "NightMode": {
         "bg": "#302D2D",
         "fg": "#FFFFFF",

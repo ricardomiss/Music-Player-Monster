@@ -4,6 +4,19 @@ from winsdk.windows.storage.streams import DataReader, Buffer, InputStreamOption
 import os
 import json
 import datetime
+from PyQt5.QtCore import pyqtSignal, QObject
+
+class MediaSignals(QObject):
+    media_changed = pyqtSignal(object)
+    playback_changed = pyqtSignal(object)
+
+media_signals = MediaSignals()
+
+isLoop = False
+
+async def request_async():
+    session = await MediaManager.request_async()
+    return session
 
 async def get_session():
     session = await MediaManager.request_async()
@@ -11,42 +24,36 @@ async def get_session():
     if current_session:
         return current_session
     else:
-        #TODO PONER EL BOTON DE PLAY
         return False
 
 async def control_media(estado):
     session = await get_session()
     if session:
-        if estado == "play":
-            session.try_play_async()
-        elif estado == "pause":
-            session.try_pause_async()
-        elif estado == "next":
+        if estado == 1:
+            session.try_toggle_play_pause_async()
+        elif estado == 2:
             session.try_skip_next_async()
-        elif estado == "previous":
+        elif estado == 3:
             session.try_skip_previous_async()
         else:
             return None
     else:
         return None
-    
-async def get_media():
-    session = await get_session()
-    if session:
-        data = await info_media(session, None)
-        await save_data(data)
-        return data
-    else:
-        return False
 
 async def info_media(current_session, event):
     info = await current_session.try_get_media_properties_async()
     timeline = current_session.get_timeline_properties()
-    thumbnailname = await get_thumbnail(info.thumbnail)
-    data = [info.title, info.artist, info.thumbnail, current_session.source_app_user_model_id, timeline.start_time, timeline.end_time, thumbnailname]
+    if not info.title and not info.artist:
+        thumbnailname = ''
+    else:
+        thumbnailname = await get_thumbnail(info.thumbnail)
+    data = [info.title, info.artist, info.thumbnail, current_session.source_app_user_model_id[:-4], timeline.start_time, timeline.end_time, thumbnailname]
+    await save_data(data)
     return data
 
 async def get_thumbnail(thumbnail):
+    if not thumbnail:
+        return None
     date = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     buffer = Buffer(5000000)
     readable_stream = await thumbnail.open_read_async()
@@ -64,6 +71,8 @@ async def get_thumbnail(thumbnail):
         
 
 async def save_data(data):
+    if not data[0] and not data[1] and not data[6]:
+        return None
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     json_data = {
         "title": data[0],
@@ -92,15 +101,43 @@ async def save_data(data):
         print(e)
 
 def on_media_properties_changed(sender, e):
+    playback_info = sender.get_playback_info()
+    if playback_info.playback_status == 0 or playback_info.playback_status == 2:
+        return None
     loop = asyncio.new_event_loop()
     datos = loop.run_until_complete(info_media(sender, e))
-    print(datos)
+    media_signals.media_changed.emit(datos)
+    loop.close()
 
+
+def on_current_session_changed(sender, e):
+    global isLoop
+    isLoop = False
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(callback())
+    loop.close()
+
+def on_playback_properties_changed(sender, e):
+    playback_info = sender.get_playback_info()
+    datos = playback_info.playback_status
+    media_signals.playback_changed.emit(datos)
+
+
+#CALLBACK TO OBTAIN SONG INFORMATION AND ITS PLAYBACK STATUS
 async def callback():
-    session = await get_session()
-    if session:
-        session.add_media_properties_changed(on_media_properties_changed)
-    while True:
-        pass
-        
+    global isLoop
+    isLoop = True
+    session = await request_async()
+    current_session = await get_session()
+    if current_session:
+        datos = await info_media(current_session, None)
+        media_signals.media_changed.emit(datos)
+        on_playback_properties_changed(current_session, None)
+        current_session.add_media_properties_changed(on_media_properties_changed)
+        current_session.add_playback_info_changed(on_playback_properties_changed)
+    else:
+        session.add_current_session_changed(on_current_session_changed)
+    while isLoop:
+        await asyncio.sleep(1)
+
 #TODO: FUNCION PARA OBTENER EL CURRENT TIME DE LA CANCION
