@@ -12,13 +12,14 @@ class MediaSignals(QObject):
 
 media_signals = MediaSignals()
 
-isLoop = False
+current_session = None
 
 async def request_async():
     session = await MediaManager.request_async()
     return session
 
 async def get_session():
+    global current_session
     session = await MediaManager.request_async()
     current_session = session.get_current_session()
     if current_session:
@@ -111,11 +112,29 @@ def on_media_properties_changed(sender, e):
 
 
 def on_current_session_changed(sender, e):
-    global isLoop
-    isLoop = False
-    loop = asyncio.new_event_loop()
-    loop.run_until_complete(callback())
-    loop.close()
+    global current_session
+    local_current_session = sender.get_current_session()
+
+    if current_session == None:
+        print("primera vez")
+        loop = asyncio.new_event_loop()
+        loop.run_until_complete(callback())
+        loop.close()
+        return
+    
+    if local_current_session != None and (local_current_session.source_app_user_model_id != current_session.source_app_user_model_id):
+        print("cambio de sesion")
+        print(f"Session changed from: {current_session.source_app_user_model_id} to: {local_current_session.source_app_user_model_id}")
+        current_session = local_current_session
+        current_session.add_playback_info_changed(on_playback_properties_changed)
+        #TODO: FIX THIS
+        #current_session.remove_media_properties_changed(on_current_session_changed)
+        current_session.add_media_properties_changed(on_media_properties_changed)
+        loop = asyncio.new_event_loop()
+        datos = loop.run_until_complete(info_media(current_session, None))
+        loop.close()
+        media_signals.media_changed.emit(datos)
+        return
 
 def on_playback_properties_changed(sender, e):
     playback_info = sender.get_playback_info()
@@ -125,8 +144,6 @@ def on_playback_properties_changed(sender, e):
 
 #CALLBACK TO OBTAIN SONG INFORMATION AND ITS PLAYBACK STATUS
 async def callback():
-    global isLoop
-    isLoop = True
     session = await request_async()
     current_session = await get_session()
     if current_session:
@@ -135,9 +152,10 @@ async def callback():
         on_playback_properties_changed(current_session, None)
         current_session.add_media_properties_changed(on_media_properties_changed)
         current_session.add_playback_info_changed(on_playback_properties_changed)
+        session.add_current_session_changed(on_current_session_changed)
     else:
         session.add_current_session_changed(on_current_session_changed)
-    while isLoop:
+    while True:
         await asyncio.sleep(1)
 
 #TODO: FUNCION PARA OBTENER EL CURRENT TIME DE LA CANCION
