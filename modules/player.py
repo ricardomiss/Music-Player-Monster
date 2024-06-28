@@ -58,7 +58,7 @@ class Player(QMainWindow):
         self.minimize_label.setGeometry(505, -4, 40, 40)
         self.minimize_label.mousePressEvent = self.minimize_window
 
-        #Contenido
+        #Content
         self.NightMode_button = QPixmap(iconosDirectory + config[mode]["buttonMode"])
         self.NightMode_label = QLabel(self)
         self.NightMode_label.setPixmap(self.NightMode_button)
@@ -70,51 +70,51 @@ class Player(QMainWindow):
         self.Backward_button = QPixmap(iconosDirectory + config[mode]["buttonBackward"])
         self.Backward_label = QLabel(self)
         self.Backward_label.setPixmap(self.Backward_button)
-        self.Backward_label.setGeometry(295, 200, 40, 40)
+        self.Backward_label.setGeometry(310, 200, 40, 40)
         self.Backward_label.mousePressEvent = self.def_backwards
 
         self.Player_button = QPixmap(iconosDirectory + config[mode]["buttonPlay"])
         self.Player_label = QLabel(self)
         self.Player_label.setPixmap(self.Player_button)
-        self.Player_label.setGeometry(365, 200, 40, 40)
+        self.Player_label.setGeometry(380, 200, 40, 40)
         self.Player_label.mousePressEvent = self.player_toggle
 
         self.Forward_button = QPixmap(iconosDirectory + config[mode]["buttonForward"])
         self.Forward_label = QLabel(self)
         self.Forward_label.setPixmap(self.Forward_button)
-        self.Forward_label.setGeometry(425, 200, 40, 40)
+        self.Forward_label.setGeometry(440, 200, 40, 40)
         self.Forward_label.mousePressEvent = self.def_forwards
 
+        #Song Info
         
         self.Title = QLabel(self)
         self.Title.setText("No hay informacion")
-        self.Title.setGeometry(255, 50, 250, 80)
+        self.Title.setGeometry(240, 50, 310, 80)
         self.Title.setStyleSheet(f'color: {config[mode]["fg"]}; font-size: 25px; font-family: Arial;')
         self.Title.setWordWrap(True)
         self.Title.setAlignment(Qt.AlignCenter | Qt.AlignTop)
 
         self.Artist = QLabel(self)
         self.Artist.setText("No hay informacion")
-        self.Artist.setGeometry(250, 135, 260, 20)
+        self.Artist.setGeometry(245, 135, 300, 20)
         self.Artist.setStyleSheet(f'color: {config[mode]["fg"]}; font-size: 15px; font-family: Arial;')
         self.Artist.setAlignment(Qt.AlignCenter)
 
         self.thumbnail = QLabel(self)
-        self.thumbnail.setGeometry(35, 50, 150, 150)
+        self.thumbnail.setGeometry(85, 65, 150, 150)
         self.thumbnail.setPixmap(QPixmap(iconosDirectory + "NoThumbnail.png"))
         self.thumbnail.setScaledContents(True)
 
-
         self.Source = QLabel(self)
         self.Source.setText("No info")
-        self.Source.setGeometry(10, 210, 200, 20)
+        self.Source.setGeometry(65, 225, 200, 20)
         self.Source.setStyleSheet(f'color: {config[mode]["fg"]}; font-size: 15px; font-family: Arial;')
         self.Source.setAlignment(Qt.AlignCenter)
 
         self.SourceIcon = QPixmap(sourceDirectory + "NoThumbnail.png")
         self.SourceIconLabel = QLabel(self)
         self.SourceIconLabel.setPixmap(self.SourceIcon)
-        self.SourceIconLabel.setGeometry(50, 208, 25, 25)
+        self.SourceIconLabel.setGeometry(105, 223, 25, 25)
         self.SourceIconLabel.setScaledContents(True)
 
         media_signals.media_changed.connect(self.info_media)
